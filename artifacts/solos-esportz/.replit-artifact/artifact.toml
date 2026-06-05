@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "SOLOS+ ESPORTZ"
+version = "1.0.0"
+id = "artifacts/solos-esportz"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25896
+
+[services.development]
+run = "pnpm --filter @workspace/solos-esportz run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/solos-esportz", "run", "build" ]
+publicDir = "artifacts/solos-esportz/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25896"
+BASE_PATH = "/"

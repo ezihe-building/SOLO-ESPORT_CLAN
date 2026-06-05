@@ -1,0 +1,1 @@
+- [SOLOS+ ESPORTZ auth pattern](solos-esportz-auth.md) — username-based auth despite OpenAPI spec using email; generated types need `as any` casts and role comparisons need `as string[]`.

@@ -1,22 +1,29 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: SOLOS+ ESPORTZ API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
-    description: Health operations
+  - name: auth
+  - name: users
+  - name: announcements
+  - name: events
+  - name: scrims
+  - name: feed
+  - name: leaderboard
+  - name: admin
+  - name: stats
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +31,1282 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # AUTH
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Register new member (pending approval)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+      responses:
+        "201":
+          description: Registered, pending approval
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Validation error
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Not authenticated
+
+  /auth/forgot-password:
+    post:
+      operationId: forgotPassword
+      tags: [auth]
+      summary: Request password reset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ForgotPasswordInput"
+      responses:
+        "200":
+          description: Reset email sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /auth/reset-password:
+    post:
+      operationId: resetPassword
+      tags: [auth]
+      summary: Reset password with token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetPasswordInput"
+      responses:
+        "200":
+          description: Password reset
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  # USERS / PROFILES
+  /users:
+    get:
+      operationId: listUsers
+      tags: [users]
+      summary: List all active members
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+
+  /users/{id}:
+    get:
+      operationId: getUser
+      tags: [users]
+      summary: Get user profile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: Not found
+
+    patch:
+      operationId: updateUser
+      tags: [users]
+      summary: Update own profile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdate"
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /users/{id}/stats:
+    patch:
+      operationId: updateUserStats
+      tags: [stats]
+      summary: Update user stats (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StatsUpdate"
+      responses:
+        "200":
+          description: Updated stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  # ANNOUNCEMENTS
+  /announcements:
+    get:
+      operationId: listAnnouncements
+      tags: [announcements]
+      summary: List announcements
+      responses:
+        "200":
+          description: List of announcements
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Announcement"
+
+    post:
+      operationId: createAnnouncement
+      tags: [announcements]
+      summary: Create announcement (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnnouncementInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Announcement"
+
+  /announcements/{id}:
+    patch:
+      operationId: updateAnnouncement
+      tags: [announcements]
+      summary: Update announcement (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnnouncementUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Announcement"
+
+    delete:
+      operationId: deleteAnnouncement
+      tags: [announcements]
+      summary: Delete announcement (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /announcements/{id}/pin:
+    patch:
+      operationId: pinAnnouncement
+      tags: [announcements]
+      summary: Pin/unpin announcement (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PinInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Announcement"
+
+  # EVENTS
+  /events:
+    get:
+      operationId: listEvents
+      tags: [events]
+      summary: List events
+      responses:
+        "200":
+          description: List of events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Event"
+
+    post:
+      operationId: createEvent
+      tags: [events]
+      summary: Create event (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+
+  /events/{id}:
+    get:
+      operationId: getEvent
+      tags: [events]
+      summary: Get event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Event
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+
+    patch:
+      operationId: updateEvent
+      tags: [events]
+      summary: Update event (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+
+    delete:
+      operationId: deleteEvent
+      tags: [events]
+      summary: Delete event (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  # SCRIMS
+  /scrims:
+    get:
+      operationId: listScrims
+      tags: [scrims]
+      summary: List scrims
+      responses:
+        "200":
+          description: List of scrims
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Scrim"
+
+    post:
+      operationId: createScrim
+      tags: [scrims]
+      summary: Create scrim (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScrimInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Scrim"
+
+  /scrims/{id}:
+    get:
+      operationId: getScrim
+      tags: [scrims]
+      summary: Get scrim details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Scrim
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Scrim"
+
+    patch:
+      operationId: updateScrim
+      tags: [scrims]
+      summary: Update scrim (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScrimUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Scrim"
+
+    delete:
+      operationId: deleteScrim
+      tags: [scrims]
+      summary: Delete scrim (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /scrims/{id}/register:
+    post:
+      operationId: registerForScrim
+      tags: [scrims]
+      summary: Register for a scrim
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+    delete:
+      operationId: unregisterFromScrim
+      tags: [scrims]
+      summary: Unregister from a scrim
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Unregistered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /scrims/{id}/result:
+    patch:
+      operationId: postScrimResult
+      tags: [scrims]
+      summary: Post scrim result (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScrimResultInput"
+      responses:
+        "200":
+          description: Result posted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Scrim"
+
+  # FEED
+  /feed:
+    get:
+      operationId: listFeedPosts
+      tags: [feed]
+      summary: List feed posts
+      responses:
+        "200":
+          description: Feed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FeedPost"
+
+    post:
+      operationId: createFeedPost
+      tags: [feed]
+      summary: Create feed post (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeedPostInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeedPost"
+
+  /feed/{id}:
+    delete:
+      operationId: deleteFeedPost
+      tags: [feed]
+      summary: Delete feed post (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /feed/{id}/like:
+    post:
+      operationId: likeFeedPost
+      tags: [feed]
+      summary: Like a feed post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Liked/unliked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LikeResponse"
+
+  # LEADERBOARD
+  /leaderboard:
+    get:
+      operationId: getLeaderboard
+      tags: [leaderboard]
+      summary: Get leaderboard
+      parameters:
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [clanPoints, kdRatio, mvpCount, activity, scrimWins]
+            default: clanPoints
+      responses:
+        "200":
+          description: Leaderboard entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LeaderboardEntry"
+
+  # DASHBOARD STATS (wow endpoint)
+  /dashboard/stats:
+    get:
+      operationId: getDashboardStats
+      tags: [stats]
+      summary: Get clan dashboard stats
+      responses:
+        "200":
+          description: Dashboard stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+  # ADMIN / MANAGEMENT
+  /admin/members:
+    get:
+      operationId: adminListMembers
+      tags: [admin]
+      summary: Admin - list all members including pending
+      responses:
+        "200":
+          description: All members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+
+  /admin/members/{id}/approve:
+    patch:
+      operationId: approveMember
+      tags: [admin]
+      summary: Approve pending member
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Approved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /admin/members/{id}/reject:
+    patch:
+      operationId: rejectMember
+      tags: [admin]
+      summary: Reject pending member
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Rejected
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /admin/members/{id}/suspend:
+    patch:
+      operationId: suspendMember
+      tags: [admin]
+      summary: Suspend member
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Suspended
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /admin/members/{id}/restore:
+    patch:
+      operationId: restoreMember
+      tags: [admin]
+      summary: Restore suspended/rejected member
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Restored
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /admin/members/{id}/delete:
+    delete:
+      operationId: deleteMember
+      tags: [admin]
+      summary: Delete member
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /admin/members/{id}/role:
+    patch:
+      operationId: updateMemberRole
+      tags: [admin]
+      summary: Promote/demote member
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleInput"
+      responses:
+        "200":
+          description: Role updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /admin/stats:
+    get:
+      operationId: getAdminStats
+      tags: [admin]
+      summary: Admin overview stats
+      responses:
+        "200":
+          description: Admin stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStats"
+
 components:
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
         status:
           type: string
-      required:
-        - status
 
+    MessageResponse:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+
+    # AUTH
+    RegisterInput:
+      type: object
+      required: [username, email, whatsapp, password]
+      properties:
+        username:
+          type: string
+          minLength: 2
+        email:
+          type: string
+        whatsapp:
+          type: string
+        password:
+          type: string
+          minLength: 8
+        tiktok:
+          type: ["string", "null"]
+        instagram:
+          type: ["string", "null"]
+        discord:
+          type: ["string", "null"]
+
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    ForgotPasswordInput:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+
+    ResetPasswordInput:
+      type: object
+      required: [token, password]
+      properties:
+        token:
+          type: string
+        password:
+          type: string
+          minLength: 8
+
+    AuthResponse:
+      type: object
+      required: [user]
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+
+    # USER
+    User:
+      type: object
+      required: [id, username, email, whatsapp, role, status, clanTag, joinedAt]
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        clanTag:
+          type: string
+        email:
+          type: string
+        whatsapp:
+          type: string
+        tiktok:
+          type: ["string", "null"]
+        instagram:
+          type: ["string", "null"]
+        discord:
+          type: ["string", "null"]
+        role:
+          type: string
+          enum: [CLAN_MASTER, ADMIN, TIER1, TIER2, TIER3, NEW_MEMBER]
+        status:
+          type: string
+          enum: [PENDING, ACTIVE, SUSPENDED, REJECTED]
+        bio:
+          type: ["string", "null"]
+        avatarUrl:
+          type: ["string", "null"]
+        kills:
+          type: integer
+        deaths:
+          type: integer
+        wins:
+          type: integer
+        losses:
+          type: integer
+        kdRatio:
+          type: number
+        clanPoints:
+          type: integer
+        mvpCount:
+          type: integer
+        activity:
+          type: integer
+        tournamentWins:
+          type: integer
+        scrimWins:
+          type: integer
+        joinedAt:
+          type: string
+
+    UserUpdate:
+      type: object
+      properties:
+        bio:
+          type: ["string", "null"]
+        avatarUrl:
+          type: ["string", "null"]
+        whatsapp:
+          type: ["string", "null"]
+        tiktok:
+          type: ["string", "null"]
+        instagram:
+          type: ["string", "null"]
+        discord:
+          type: ["string", "null"]
+
+    StatsUpdate:
+      type: object
+      properties:
+        kills:
+          type: ["integer", "null"]
+        deaths:
+          type: ["integer", "null"]
+        wins:
+          type: ["integer", "null"]
+        losses:
+          type: ["integer", "null"]
+        clanPoints:
+          type: ["integer", "null"]
+        mvpCount:
+          type: ["integer", "null"]
+        activity:
+          type: ["integer", "null"]
+        tournamentWins:
+          type: ["integer", "null"]
+        scrimWins:
+          type: ["integer", "null"]
+
+    RoleInput:
+      type: object
+      required: [role]
+      properties:
+        role:
+          type: string
+          enum: [CLAN_MASTER, ADMIN, TIER1, TIER2, TIER3, NEW_MEMBER]
+
+    # ANNOUNCEMENTS
+    Announcement:
+      type: object
+      required: [id, title, content, isPinned, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+        imageUrl:
+          type: ["string", "null"]
+        link:
+          type: ["string", "null"]
+        isPinned:
+          type: boolean
+        authorId:
+          type: ["integer", "null"]
+        authorName:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    AnnouncementInput:
+      type: object
+      required: [title, content]
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        imageUrl:
+          type: ["string", "null"]
+        link:
+          type: ["string", "null"]
+        isPinned:
+          type: boolean
+
+    AnnouncementUpdate:
+      type: object
+      properties:
+        title:
+          type: ["string", "null"]
+        content:
+          type: ["string", "null"]
+        imageUrl:
+          type: ["string", "null"]
+        link:
+          type: ["string", "null"]
+        isPinned:
+          type: ["boolean", "null"]
+
+    PinInput:
+      type: object
+      required: [isPinned]
+      properties:
+        isPinned:
+          type: boolean
+
+    # EVENTS
+    Event:
+      type: object
+      required: [id, title, description, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        imageUrl:
+          type: ["string", "null"]
+        link:
+          type: ["string", "null"]
+        eventDate:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    EventInput:
+      type: object
+      required: [title, description]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        imageUrl:
+          type: ["string", "null"]
+        link:
+          type: ["string", "null"]
+        eventDate:
+          type: ["string", "null"]
+
+    EventUpdate:
+      type: object
+      properties:
+        title:
+          type: ["string", "null"]
+        description:
+          type: ["string", "null"]
+        imageUrl:
+          type: ["string", "null"]
+        link:
+          type: ["string", "null"]
+        eventDate:
+          type: ["string", "null"]
+
+    # SCRIMS
+    Scrim:
+      type: object
+      required: [id, title, status, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        imageUrl:
+          type: ["string", "null"]
+        link:
+          type: ["string", "null"]
+        scheduledAt:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [UPCOMING, ONGOING, COMPLETED, CANCELLED]
+        result:
+          type: ["string", "null"]
+        participants:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScrimParticipant"
+        createdAt:
+          type: string
+
+    ScrimParticipant:
+      type: object
+      required: [userId, username, clanTag]
+      properties:
+        userId:
+          type: integer
+        username:
+          type: string
+        clanTag:
+          type: string
+        avatarUrl:
+          type: ["string", "null"]
+
+    ScrimInput:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        imageUrl:
+          type: ["string", "null"]
+        link:
+          type: ["string", "null"]
+        scheduledAt:
+          type: ["string", "null"]
+
+    ScrimUpdate:
+      type: object
+      properties:
+        title:
+          type: ["string", "null"]
+        description:
+          type: ["string", "null"]
+        imageUrl:
+          type: ["string", "null"]
+        link:
+          type: ["string", "null"]
+        scheduledAt:
+          type: ["string", "null"]
+        status:
+          type: ["string", "null"]
+
+    ScrimResultInput:
+      type: object
+      required: [result]
+      properties:
+        result:
+          type: string
+        status:
+          type: string
+          enum: [COMPLETED, CANCELLED]
+
+    # FEED
+    FeedPost:
+      type: object
+      required: [id, content, type, likeCount, isLikedByMe, createdAt]
+      properties:
+        id:
+          type: integer
+        content:
+          type: string
+        type:
+          type: string
+          enum: [ANNOUNCEMENT, EVENT, SCRIM_RESULT, IMAGE, NEWS]
+        imageUrl:
+          type: ["string", "null"]
+        link:
+          type: ["string", "null"]
+        authorId:
+          type: ["integer", "null"]
+        authorName:
+          type: ["string", "null"]
+        authorAvatar:
+          type: ["string", "null"]
+        likeCount:
+          type: integer
+        isLikedByMe:
+          type: boolean
+        createdAt:
+          type: string
+
+    FeedPostInput:
+      type: object
+      required: [content, type]
+      properties:
+        content:
+          type: string
+        type:
+          type: string
+          enum: [ANNOUNCEMENT, EVENT, SCRIM_RESULT, IMAGE, NEWS]
+        imageUrl:
+          type: ["string", "null"]
+        link:
+          type: ["string", "null"]
+
+    LikeResponse:
+      type: object
+      required: [liked, likeCount]
+      properties:
+        liked:
+          type: boolean
+        likeCount:
+          type: integer
+
+    # LEADERBOARD
+    LeaderboardEntry:
+      type: object
+      required: [rank, userId, username, clanTag, role, avatarUrl, kills, wins, kdRatio, clanPoints, mvpCount, activity, scrimWins]
+      properties:
+        rank:
+          type: integer
+        userId:
+          type: integer
+        username:
+          type: string
+        clanTag:
+          type: string
+        role:
+          type: string
+        avatarUrl:
+          type: ["string", "null"]
+        kills:
+          type: integer
+        wins:
+          type: integer
+        kdRatio:
+          type: number
+        clanPoints:
+          type: integer
+        mvpCount:
+          type: integer
+        activity:
+          type: integer
+        scrimWins:
+          type: integer
+
+    # STATS
+    DashboardStats:
+      type: object
+      required: [activeMembers, scrimWins, avgKd, upcomingScrims, recentAnnouncements, upcomingScrimsList]
+      properties:
+        activeMembers:
+          type: integer
+        scrimWins:
+          type: integer
+        avgKd:
+          type: number
+        upcomingScrims:
+          type: integer
+        recentAnnouncements:
+          type: array
+          items:
+            $ref: "#/components/schemas/Announcement"
+        upcomingScrimsList:
+          type: array
+          items:
+            $ref: "#/components/schemas/Scrim"
+
+    AdminStats:
+      type: object
+      required: [total, pending, active, tier1, tier2, tier3]
+      properties:
+        total:
+          type: integer
+        pending:
+          type: integer
+        active:
+          type: integer
+        tier1:
+          type: integer
+        tier2:
+          type: integer
+        tier3:
+          type: integer
+        suspended:
+          type: integer
