@@ -10,11 +10,10 @@ import {
 import logoUrl from "@assets/solos-logo-clean.png";
 
 const PANEL_TOKEN = "terrorist";
-const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 async function pf(path: string, opts: RequestInit = {}) {
   const method = opts.method ?? "GET";
-  const res = await fetch(`${BASE}/api${path}`, {
+  const res = await fetch(`/api${path}`, {
     ...opts,
     credentials: "include",
     headers: {
