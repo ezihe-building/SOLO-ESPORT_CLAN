@@ -15,6 +15,14 @@ const AuthContext = createContext<AuthContextType>({
   error: null,
 });
 
+function isUnauthorizedError(error: unknown): boolean {
+  // 401 means the user is not logged in — this is normal, not a server error
+  if (error && typeof error === "object" && "status" in error) {
+    return (error as { status: number }).status === 401;
+  }
+  return false;
+}
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { data: user, isLoading, error } = useGetMe({
     query: {
@@ -23,13 +31,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   });
 
+  const isAuthError = error && !isUnauthorizedError(error);
+
   return (
     <AuthContext.Provider value={{ user: user || null, isLoading, error: error as Error | null }}>
       {isLoading ? (
         <div className="min-h-[100dvh] flex items-center justify-center bg-background text-primary">
           <Loader2 className="w-8 h-8 animate-spin" />
         </div>
-      ) : error ? (
+      ) : isAuthError ? (
         <div className="min-h-[100dvh] flex items-center justify-center bg-background text-foreground px-6">
           <div className="text-center max-w-xs space-y-3">
             <AlertCircle className="w-10 h-10 text-destructive mx-auto" />
