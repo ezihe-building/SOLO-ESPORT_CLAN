@@ -62,10 +62,13 @@ if (process.env.SERVE_STATIC === "true" || process.env.NODE_ENV === "production"
   // dist/public is built by `vite build` in the frontend workspace
   const staticDir = path.resolve(__dirname, "..", "..", "solos-esportz", "dist", "public");
   app.use(express.static(staticDir));
+  
   // SPA fallback — all non-/api routes serve index.html
-  app.get("*", (_req, res) => {
+  // Updated for Express v5 strict routing rules
+  app.get("/*splat", (_req, res) => {
     res.sendFile(path.join(staticDir, "index.html"));
   });
 }
 
 export default app;
+  
