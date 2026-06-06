@@ -2,8 +2,12 @@ import express, { type Express } from "express";
 import cors from "cors";
 import session from "express-session";
 import pinoHttp from "pino-http";
+import path from "path";
+import { fileURLToPath } from "url";
 import router from "./routes";
 import { logger } from "./lib/logger";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app: Express = express();
 
@@ -52,5 +56,16 @@ app.use(
 );
 
 app.use("/api", router);
+
+// Serve the built Vite frontend in production
+if (process.env.SERVE_STATIC === "true" || process.env.NODE_ENV === "production") {
+  // dist/public is built by `vite build` in the frontend workspace
+  const staticDir = path.resolve(__dirname, "..", "..", "solos-esportz", "dist", "public");
+  app.use(express.static(staticDir));
+  // SPA fallback — all non-/api routes serve index.html
+  app.get("*", (_req, res) => {
+    res.sendFile(path.join(staticDir, "index.html"));
+  });
+}
 
 export default app;

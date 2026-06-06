@@ -9,6 +9,7 @@ import feedRouter from "./feed";
 import leaderboardRouter from "./leaderboard";
 import dashboardRouter from "./dashboard";
 import adminRouter from "./admin";
+import panelRouter from "./panel";
 
 const router: IRouter = Router();
 
@@ -22,5 +23,6 @@ router.use(feedRouter);
 router.use(leaderboardRouter);
 router.use(dashboardRouter);
 router.use(adminRouter);
+router.use(panelRouter);
 
 export default router;
