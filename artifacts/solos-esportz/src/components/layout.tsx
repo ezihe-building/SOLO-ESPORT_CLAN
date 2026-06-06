@@ -5,11 +5,9 @@ import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import logoUrl from "@assets/solos-logo-clean.png";
 
-const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
-
 async function signOut() {
-  await fetch(`${BASE}/api/auth/logout`, { method: "POST", credentials: "include" }).catch(() => {});
-  window.location.href = `${BASE}/`;
+  await fetch("/api/auth/logout", { method: "POST", credentials: "include" }).catch(() => {});
+  window.location.href = "/";
 }
 
 export const AppLayout = ({ children }: { children: React.ReactNode }) => {

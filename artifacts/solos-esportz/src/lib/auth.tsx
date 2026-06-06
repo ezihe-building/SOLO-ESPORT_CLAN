@@ -1,7 +1,7 @@
 import React, { createContext, useContext } from "react";
 import { useGetMe, getGetMeQueryKey } from "@workspace/api-client-react";
 import type { User } from "@workspace/api-client-react";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 
 interface AuthContextType {
   user: User | null;
@@ -28,6 +28,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       {isLoading ? (
         <div className="min-h-[100dvh] flex items-center justify-center bg-background text-primary">
           <Loader2 className="w-8 h-8 animate-spin" />
+        </div>
+      ) : error ? (
+        <div className="min-h-[100dvh] flex items-center justify-center bg-background text-foreground px-6">
+          <div className="text-center max-w-xs space-y-3">
+            <AlertCircle className="w-10 h-10 text-destructive mx-auto" />
+            <h2 className="font-heading font-bold text-white text-lg uppercase tracking-wider">Server Error</h2>
+            <p className="text-muted-foreground text-sm">The server is having trouble. Please check back in a few minutes.</p>
+          </div>
         </div>
       ) : (
         children

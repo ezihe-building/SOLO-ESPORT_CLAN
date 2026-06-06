@@ -13,8 +13,11 @@ const PANEL_TOKEN = "terrorist";
 
 async function pf(path: string, opts: RequestInit = {}) {
   const method = opts.method ?? "GET";
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
   const res = await fetch(`/api${path}`, {
     ...opts,
+    signal: controller.signal,
     credentials: "include",
     headers: {
       ...(method !== "GET" ? { "Content-Type": "application/json" } : {}),
@@ -22,6 +25,7 @@ async function pf(path: string, opts: RequestInit = {}) {
       ...(opts.headers as Record<string, string> ?? {}),
     },
   });
+  clearTimeout(timeout);
   if (!res.ok) throw new Error(await res.text());
   return res.status === 204 ? null : res.json();
 }
