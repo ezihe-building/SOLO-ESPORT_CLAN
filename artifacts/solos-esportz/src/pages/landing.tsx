@@ -49,11 +49,11 @@ export default function LandingPage() {
 
       <Particles />
 
-      {/* ── HERO ── Full artwork, no crop ── */}
+      {/* ── HERO ── Constrained artwork ── */}
       <header className="relative z-10 flex flex-col items-center text-center pt-8">
 
-        {/* Artwork — full, contained, glowing */}
-        <div className="relative w-full flex items-center justify-center select-none" style={{ minHeight: 320 }}>
+        {/* Artwork — constrained, glowing */}
+        <div className="relative w-full flex items-center justify-center select-none mt-2 mb-6" style={{ minHeight: 280 }}>
           {/* Glow behind image */}
           <div
             className="absolute inset-0 pointer-events-none"
@@ -63,9 +63,10 @@ export default function LandingPage() {
             src={artworkUrl}
             alt="SOLOS+ ESPORTZ"
             draggable={false}
-            className="w-full max-w-[360px] object-contain animate-float"
+            className="w-full max-w-[280px] aspect-square object-cover rounded-[2rem] animate-float relative z-10"
             style={{
-              filter: "drop-shadow(0 0 40px rgba(200,0,0,0.55)) drop-shadow(0 0 10px rgba(255,80,80,0.3))",
+              border: "1px solid rgba(255,50,0,0.2)",
+              boxShadow: "0 0 40px rgba(200,0,0,0.25)"
             }}
           />
         </div>
