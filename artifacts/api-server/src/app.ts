@@ -11,6 +11,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app: Express = express();
 
+// Trust proxy headers (Cloudflare / Render) so req.secure is true
+app.set("trust proxy", 1);
+
 app.use(
   pinoHttp({
     logger,
