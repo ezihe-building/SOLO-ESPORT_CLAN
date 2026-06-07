@@ -57,6 +57,13 @@ app.use(
 
 app.use("/api", router);
 
+// JSON error handler — must be after routes, before static serving
+app.use("/api", (err: any, _req: any, res: any, _next: any) => {
+  const status = err.status || err.statusCode || 500;
+  const message = err.message || "Internal server error";
+  res.status(status).json({ error: message });
+});
+
 // Serve the built Vite frontend in production
 if (process.env.SERVE_STATIC === "true" || process.env.NODE_ENV === "production") {
   // dist/public is built by `vite build` in the frontend workspace
