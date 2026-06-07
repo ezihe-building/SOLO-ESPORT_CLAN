@@ -51,7 +51,6 @@
 }
 
 :root {
-  /* Default to dark mode colors since it's a dark war room vibe */
   --button-outline: rgba(255,255,255, .10);
   --badge-outline: rgba(255,255,255, .05);
   --opaque-button-border-intensity: 9;
@@ -70,7 +69,6 @@
   --popover-foreground: 0 0% 98%;
   --popover-border: 240 10% 12%;
   
-  /* Red energy */
   --primary: 0 100% 50%;
   --primary-foreground: 0 0% 100%;
   
@@ -116,4 +114,110 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading uppercase tracking-wide;
   }
+}
+
+/* ── Global Animations ── */
+@keyframes float-up {
+  0%   { transform: translateY(0px) scale(1);   opacity: 0.6; }
+  50%  { transform: translateY(-18px) scale(1.1); opacity: 1; }
+  100% { transform: translateY(0px) scale(1);   opacity: 0.6; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50%       { opacity: 0.8; transform: scale(1.08); }
+}
+
+@keyframes drift {
+  0%   { transform: translate(0, 0); }
+  33%  { transform: translate(6px, -10px); }
+  66%  { transform: translate(-4px, 6px); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes scan-line {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  10%  { opacity: 0.06; }
+  90%  { opacity: 0.06; }
+  100% { transform: translateY(100vh); opacity: 0; }
+}
+
+@keyframes particle-rise {
+  0%   { transform: translateY(0) scale(0); opacity: 0; }
+  15%  { opacity: 1; }
+  85%  { opacity: 0.6; }
+  100% { transform: translateY(-120px) scale(1.5); opacity: 0; }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes border-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(255,0,0,0.2), inset 0 0 8px rgba(255,0,0,0.05); }
+  50%       { box-shadow: 0 0 20px rgba(255,0,0,0.5), inset 0 0 12px rgba(255,0,0,0.1); }
+}
+
+.animate-float { animation: float-up 4s ease-in-out infinite; }
+.animate-glow-pulse { animation: glow-pulse 3s ease-in-out infinite; }
+.animate-drift { animation: drift 8s ease-in-out infinite; }
+.animate-fade-in-up { animation: fade-in-up 0.6s ease-out both; }
+.animate-border-glow { animation: border-glow 2.5s ease-in-out infinite; }
+
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-700 { animation-delay: 0.7s; }
+.delay-1000 { animation-delay: 1s; }
+.delay-1500 { animation-delay: 1.5s; }
+.delay-2000 { animation-delay: 2s; }
+.delay-2500 { animation-delay: 2.5s; }
+
+/* Particle dots */
+.particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: hsl(0, 100%, 50%);
+  animation: particle-rise 3s ease-out infinite;
+  pointer-events: none;
+}
+
+/* Scan line effect */
+.scan-line {
+  position: absolute;
+  left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255,0,0,0.08), transparent);
+  animation: scan-line 6s linear infinite;
+  pointer-events: none;
+}
+
+/* Glass card */
+.glass-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Input premium styling */
+.input-premium {
+  background: rgba(255,255,255,0.05) !important;
+  border-color: rgba(255,255,255,0.12) !important;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-premium:focus {
+  border-color: rgba(255,0,0,0.5) !important;
+  box-shadow: 0 0 0 2px rgba(255,0,0,0.15) !important;
 }
