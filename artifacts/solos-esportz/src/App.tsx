@@ -14,6 +14,7 @@ import ScrimsPage from "@/pages/scrims";
 import FeedPage from "@/pages/feed";
 import ProfilePage from "@/pages/profile";
 import AdminPage from "@/pages/admin";
+import PendingPage from "@/pages/pending";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -27,6 +28,8 @@ const queryClient = new QueryClient({
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
   const { user } = useAuth();
   if (!user) return <Redirect to="/" />;
+  // If user is pending, redirect to pending page
+  if (user.status === "PENDING") return <Redirect to="/pending" />;
   return <Component />;
 }
 
@@ -37,6 +40,7 @@ function Router() {
     <Switch>
       <Route path="/" component={user ? () => <Redirect to="/home" /> : LandingPage} />
       <Route path="/auth" component={user ? () => <Redirect to="/home" /> : AuthPage} />
+      <Route path="/pending" component={PendingPage} />
       <Route path="/home" component={() => <ProtectedRoute component={HomePage} />} />
       <Route path="/ranks" component={() => <ProtectedRoute component={RanksPage} />} />
       <Route path="/scrims" component={() => <ProtectedRoute component={ScrimsPage} />} />
