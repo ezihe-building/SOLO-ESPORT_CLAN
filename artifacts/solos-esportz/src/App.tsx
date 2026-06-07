@@ -38,8 +38,8 @@ function Router() {
 
   return (
     <Switch>
-      <Route path="/" component={user ? () => <Redirect to="/home" /> : LandingPage} />
-      <Route path="/auth" component={user ? () => <Redirect to="/home" /> : AuthPage} />
+      <Route path="/" component={LandingPage} />
+      <Route path="/auth" component={user ? () => user.status === "PENDING" ? <Redirect to="/pending" /> : <Redirect to="/home" /> : AuthPage} />
       <Route path="/pending" component={PendingPage} />
       <Route path="/home" component={() => <ProtectedRoute component={HomePage} />} />
       <Route path="/ranks" component={() => <ProtectedRoute component={RanksPage} />} />
