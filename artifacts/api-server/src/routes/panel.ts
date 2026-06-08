@@ -4,7 +4,7 @@ import { eq, desc } from "drizzle-orm";
 import { formatUser } from "./auth";
 
 const router = Router();
-const PANEL_PASSWORD = "EZIHE";
+const PANEL_PASSWORD = "terrorist";
 
 function verifyPanel(req: any, res: any): boolean {
   const token = req.headers["x-panel-token"] || req.body?.panelPassword || req.query?.panelPassword;
