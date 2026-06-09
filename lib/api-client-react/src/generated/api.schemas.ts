@@ -13,6 +13,10 @@ export interface MessageResponse {
   message: string;
 }
 
+export interface UploadResponse {
+  url: string;
+}
+
 export interface RegisterInput {
   /** @minLength 2 */
   username: string;
@@ -39,7 +43,6 @@ export interface ForgotPasswordInput {
 
 export interface ResetPasswordInput {
   token: string;
-  /** @minLength 8 */
   password: string;
 }
 
@@ -48,6 +51,8 @@ export type UserRole = typeof UserRole[keyof typeof UserRole];
 
 export const UserRole = {
   CLAN_MASTER: 'CLAN_MASTER',
+  CO_LEADER: 'CO_LEADER',
+  MANAGEMENT: 'MANAGEMENT',
   ADMIN: 'ADMIN',
   TIER1: 'TIER1',
   TIER2: 'TIER2',
@@ -68,9 +73,13 @@ export const UserStatus = {
 export interface User {
   id: number;
   username: string;
+  /** @nullable */
+  displayName?: string | null;
   clanTag: string;
-  email: string;
-  whatsapp: string;
+  /** @nullable */
+  email?: string | null;
+  /** @nullable */
+  whatsapp?: string | null;
   /** @nullable */
   tiktok?: string | null;
   /** @nullable */
@@ -93,7 +102,7 @@ export interface User {
   activity?: number;
   tournamentWins?: number;
   scrimWins?: number;
-  joinedAt: string;
+  joinedAt?: string;
 }
 
 export interface AuthResponse {
@@ -101,6 +110,8 @@ export interface AuthResponse {
 }
 
 export interface UserUpdate {
+  /** @nullable */
+  displayName?: string | null;
   /** @nullable */
   bio?: string | null;
   /** @nullable */
@@ -141,7 +152,8 @@ export type RoleInputRole = typeof RoleInputRole[keyof typeof RoleInputRole];
 
 export const RoleInputRole = {
   CLAN_MASTER: 'CLAN_MASTER',
-  ADMIN: 'ADMIN',
+  CO_LEADER: 'CO_LEADER',
+  MANAGEMENT: 'MANAGEMENT',
   TIER1: 'TIER1',
   TIER2: 'TIER2',
   TIER3: 'TIER3',
@@ -160,7 +172,7 @@ export interface Announcement {
   imageUrl?: string | null;
   /** @nullable */
   link?: string | null;
-  isPinned: boolean;
+  isPinned?: boolean;
   /** @nullable */
   authorId?: number | null;
   /** @nullable */
@@ -318,6 +330,7 @@ export const FeedPostType = {
   EVENT: 'EVENT',
   SCRIM_RESULT: 'SCRIM_RESULT',
   IMAGE: 'IMAGE',
+  VIDEO: 'VIDEO',
   NEWS: 'NEWS',
 } as const;
 
@@ -328,15 +341,22 @@ export interface FeedPost {
   /** @nullable */
   imageUrl?: string | null;
   /** @nullable */
+  videoUrl?: string | null;
+  /** @nullable */
   link?: string | null;
   /** @nullable */
   authorId?: number | null;
   /** @nullable */
   authorName?: string | null;
   /** @nullable */
+  authorDisplayName?: string | null;
+  /** @nullable */
   authorAvatar?: string | null;
+  /** @nullable */
+  authorRole?: string | null;
   likeCount: number;
   isLikedByMe: boolean;
+  commentCount: number;
   createdAt: string;
 }
 
@@ -348,6 +368,7 @@ export const FeedPostInputType = {
   EVENT: 'EVENT',
   SCRIM_RESULT: 'SCRIM_RESULT',
   IMAGE: 'IMAGE',
+  VIDEO: 'VIDEO',
   NEWS: 'NEWS',
 } as const;
 
@@ -357,12 +378,69 @@ export interface FeedPostInput {
   /** @nullable */
   imageUrl?: string | null;
   /** @nullable */
+  videoUrl?: string | null;
+  /** @nullable */
   link?: string | null;
 }
 
 export interface LikeResponse {
   liked: boolean;
   likeCount: number;
+}
+
+export interface FeedComment {
+  id: number;
+  postId: number;
+  content: string;
+  authorId: number;
+  authorName: string;
+  /** @nullable */
+  authorDisplayName?: string | null;
+  /** @nullable */
+  authorAvatar?: string | null;
+  authorRole: string;
+  createdAt: string;
+}
+
+export interface FeedCommentInput {
+  content: string;
+}
+
+export type ClanGcMessageType = typeof ClanGcMessageType[keyof typeof ClanGcMessageType];
+
+
+export const ClanGcMessageType = {
+  TEXT: 'TEXT',
+  IMAGE: 'IMAGE',
+  VOICE: 'VOICE',
+} as const;
+
+export interface ClanGcMessage {
+  id: number;
+  content: string;
+  type: ClanGcMessageType;
+  authorId: number;
+  authorName: string;
+  /** @nullable */
+  authorDisplayName?: string | null;
+  /** @nullable */
+  authorAvatar?: string | null;
+  authorRole: string;
+  createdAt: string;
+}
+
+export type ClanGcMessageInputType = typeof ClanGcMessageInputType[keyof typeof ClanGcMessageInputType];
+
+
+export const ClanGcMessageInputType = {
+  TEXT: 'TEXT',
+  IMAGE: 'IMAGE',
+  VOICE: 'VOICE',
+} as const;
+
+export interface ClanGcMessageInput {
+  content: string;
+  type: ClanGcMessageInputType;
 }
 
 export interface LeaderboardEntry {

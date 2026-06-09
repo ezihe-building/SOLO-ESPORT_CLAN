@@ -8,6 +8,8 @@
 
 export interface UserUpdate {
   /** @nullable */
+  displayName?: string | null;
+  /** @nullable */
   bio?: string | null;
   /** @nullable */
   avatarUrl?: string | null;

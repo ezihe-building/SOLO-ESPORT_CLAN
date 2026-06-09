@@ -14,14 +14,21 @@ export interface FeedPost {
   /** @nullable */
   imageUrl?: string | null;
   /** @nullable */
+  videoUrl?: string | null;
+  /** @nullable */
   link?: string | null;
   /** @nullable */
   authorId?: number | null;
   /** @nullable */
   authorName?: string | null;
   /** @nullable */
+  authorDisplayName?: string | null;
+  /** @nullable */
   authorAvatar?: string | null;
+  /** @nullable */
+  authorRole?: string | null;
   likeCount: number;
   isLikedByMe: boolean;
+  commentCount: number;
   createdAt: string;
 }

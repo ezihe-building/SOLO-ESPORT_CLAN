@@ -7,6 +7,7 @@ export const feedPostsTable = pgTable("feed_posts", {
   content: text("content").notNull(),
   type: text("type").notNull().default("NEWS"),
   imageUrl: text("image_url"),
+  videoUrl: text("video_url"),
   link: text("link"),
   authorId: integer("author_id"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
@@ -19,9 +20,18 @@ export const feedLikesTable = pgTable("feed_likes", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+export const feedCommentsTable = pgTable("feed_comments", {
+  id: serial("id").primaryKey(),
+  postId: integer("post_id").notNull(),
+  authorId: integer("author_id").notNull(),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const insertFeedPostSchema = createInsertSchema(feedPostsTable).omit({
   id: true,
   createdAt: true,
 });
 export type InsertFeedPost = z.infer<typeof insertFeedPostSchema>;
 export type FeedPost = typeof feedPostsTable.$inferSelect;
+export type FeedComment = typeof feedCommentsTable.$inferSelect;

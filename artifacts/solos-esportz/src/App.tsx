@@ -15,6 +15,7 @@ import FeedPage from "@/pages/feed";
 import ProfilePage from "@/pages/profile";
 import AdminPage from "@/pages/admin";
 import PendingPage from "@/pages/pending";
+import ClanGcPage from "@/pages/clan-gc";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,7 +29,6 @@ const queryClient = new QueryClient({
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
   const { user } = useAuth();
   if (!user) return <Redirect to="/" />;
-  // If user is pending, redirect to pending page
   if (user.status === "PENDING") return <Redirect to="/pending" />;
   return <Component />;
 }
@@ -47,6 +47,7 @@ function Router() {
       <Route path="/feed" component={() => <ProtectedRoute component={FeedPage} />} />
       <Route path="/profile" component={() => <ProtectedRoute component={ProfilePage} />} />
       <Route path="/admin" component={() => <ProtectedRoute component={AdminPage} />} />
+      <Route path="/clan-gc" component={() => <ProtectedRoute component={ClanGcPage} />} />
       <Route component={NotFound} />
     </Switch>
   );

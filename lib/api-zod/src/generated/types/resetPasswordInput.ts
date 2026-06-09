@@ -8,6 +8,5 @@
 
 export interface ResetPasswordInput {
   token: string;
-  /** @minLength 8 */
   password: string;
 }

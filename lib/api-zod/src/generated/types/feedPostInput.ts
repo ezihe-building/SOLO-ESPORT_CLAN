@@ -13,5 +13,7 @@ export interface FeedPostInput {
   /** @nullable */
   imageUrl?: string | null;
   /** @nullable */
+  videoUrl?: string | null;
+  /** @nullable */
   link?: string | null;
 }

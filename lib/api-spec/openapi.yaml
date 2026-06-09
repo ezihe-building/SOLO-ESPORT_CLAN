@@ -17,6 +17,8 @@ tags:
   - name: leaderboard
   - name: admin
   - name: stats
+  - name: upload
+  - name: clan-gc
 
 paths:
   /healthz:
@@ -32,12 +34,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
 
-  # AUTH
   /auth/register:
     post:
       operationId: register
       tags: [auth]
-      summary: Register new member (pending approval)
+      summary: Register new member
       requestBody:
         required: true
         content:
@@ -46,13 +47,11 @@ paths:
               $ref: "#/components/schemas/RegisterInput"
       responses:
         "201":
-          description: Registered, pending approval
+          description: Registered
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/AuthResponse"
-        "400":
-          description: Validation error
 
   /auth/login:
     post:
@@ -72,8 +71,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AuthResponse"
-        "401":
-          description: Invalid credentials
 
   /auth/logout:
     post:
@@ -141,7 +138,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/MessageResponse"
 
-  # USERS / PROFILES
   /users:
     get:
       operationId: listUsers
@@ -175,8 +171,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
-        "404":
-          description: Not found
 
     patch:
       operationId: updateUser
@@ -227,7 +221,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/User"
 
-  # ANNOUNCEMENTS
   /announcements:
     get:
       operationId: listAnnouncements
@@ -325,7 +318,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/Announcement"
 
-  # EVENTS
   /events:
     get:
       operationId: listEvents
@@ -416,7 +408,6 @@ paths:
         "204":
           description: Deleted
 
-  # SCRIMS
   /scrims:
     get:
       operationId: listScrims
@@ -569,7 +560,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/Scrim"
 
-  # FEED
   /feed:
     get:
       operationId: listFeedPosts
@@ -588,7 +578,7 @@ paths:
     post:
       operationId: createFeedPost
       tags: [feed]
-      summary: Create feed post (admin)
+      summary: Create feed post (all approved members)
       requestBody:
         required: true
         content:
@@ -607,7 +597,7 @@ paths:
     delete:
       operationId: deleteFeedPost
       tags: [feed]
-      summary: Delete feed post (admin)
+      summary: Delete feed post (own or admin)
       parameters:
         - name: id
           in: path
@@ -622,7 +612,7 @@ paths:
     post:
       operationId: likeFeedPost
       tags: [feed]
-      summary: Like a feed post
+      summary: Like/unlike a feed post
       parameters:
         - name: id
           in: path
@@ -637,7 +627,51 @@ paths:
               schema:
                 $ref: "#/components/schemas/LikeResponse"
 
-  # LEADERBOARD
+  /feed/{id}/comments:
+    get:
+      operationId: listFeedComments
+      tags: [feed]
+      summary: List comments on a feed post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Comments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FeedComment"
+
+    post:
+      operationId: createFeedComment
+      tags: [feed]
+      summary: Comment on a feed post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeedCommentInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeedComment"
+
   /leaderboard:
     get:
       operationId: getLeaderboard
@@ -660,7 +694,6 @@ paths:
                 items:
                   $ref: "#/components/schemas/LeaderboardEntry"
 
-  # DASHBOARD STATS (wow endpoint)
   /dashboard/stats:
     get:
       operationId: getDashboardStats
@@ -674,7 +707,39 @@ paths:
               schema:
                 $ref: "#/components/schemas/DashboardStats"
 
-  # ADMIN / MANAGEMENT
+  /clan-gc:
+    get:
+      operationId: listClanGcMessages
+      tags: [clan-gc]
+      summary: List Clan GC messages (latest 100)
+      responses:
+        "200":
+          description: Messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ClanGcMessage"
+
+    post:
+      operationId: createClanGcMessage
+      tags: [clan-gc]
+      summary: Send a Clan GC message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClanGcMessageInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClanGcMessage"
+
   /admin/members:
     get:
       operationId: adminListMembers
@@ -835,7 +900,13 @@ components:
         message:
           type: string
 
-    # AUTH
+    UploadResponse:
+      type: object
+      required: [url]
+      properties:
+        url:
+          type: string
+
     RegisterInput:
       type: object
       required: [username, email, whatsapp, password]
@@ -881,7 +952,6 @@ components:
           type: string
         password:
           type: string
-          minLength: 8
 
     AuthResponse:
       type: object
@@ -890,21 +960,22 @@ components:
         user:
           $ref: "#/components/schemas/User"
 
-    # USER
     User:
       type: object
-      required: [id, username, email, whatsapp, role, status, clanTag, joinedAt]
+      required: [id, username, clanTag, role, status]
       properties:
         id:
           type: integer
         username:
           type: string
+        displayName:
+          type: ["string", "null"]
         clanTag:
           type: string
         email:
-          type: string
+          type: ["string", "null"]
         whatsapp:
-          type: string
+          type: ["string", "null"]
         tiktok:
           type: ["string", "null"]
         instagram:
@@ -913,7 +984,7 @@ components:
           type: ["string", "null"]
         role:
           type: string
-          enum: [CLAN_MASTER, ADMIN, TIER1, TIER2, TIER3, NEW_MEMBER]
+          enum: [CLAN_MASTER, CO_LEADER, MANAGEMENT, ADMIN, TIER1, TIER2, TIER3, NEW_MEMBER]
         status:
           type: string
           enum: [PENDING, ACTIVE, SUSPENDED, REJECTED]
@@ -947,6 +1018,8 @@ components:
     UserUpdate:
       type: object
       properties:
+        displayName:
+          type: ["string", "null"]
         bio:
           type: ["string", "null"]
         avatarUrl:
@@ -988,12 +1061,11 @@ components:
       properties:
         role:
           type: string
-          enum: [CLAN_MASTER, ADMIN, TIER1, TIER2, TIER3, NEW_MEMBER]
+          enum: [CLAN_MASTER, CO_LEADER, MANAGEMENT, TIER1, TIER2, TIER3, NEW_MEMBER]
 
-    # ANNOUNCEMENTS
     Announcement:
       type: object
-      required: [id, title, content, isPinned, createdAt]
+      required: [id, title, content, createdAt]
       properties:
         id:
           type: integer
@@ -1052,7 +1124,6 @@ components:
         isPinned:
           type: boolean
 
-    # EVENTS
     Event:
       type: object
       required: [id, title, description, createdAt]
@@ -1103,7 +1174,6 @@ components:
         eventDate:
           type: ["string", "null"]
 
-    # SCRIMS
     Scrim:
       type: object
       required: [id, title, status, createdAt]
@@ -1186,10 +1256,9 @@ components:
           type: string
           enum: [COMPLETED, CANCELLED]
 
-    # FEED
     FeedPost:
       type: object
-      required: [id, content, type, likeCount, isLikedByMe, createdAt]
+      required: [id, content, type, likeCount, isLikedByMe, commentCount, createdAt]
       properties:
         id:
           type: integer
@@ -1197,8 +1266,10 @@ components:
           type: string
         type:
           type: string
-          enum: [ANNOUNCEMENT, EVENT, SCRIM_RESULT, IMAGE, NEWS]
+          enum: [ANNOUNCEMENT, EVENT, SCRIM_RESULT, IMAGE, VIDEO, NEWS]
         imageUrl:
+          type: ["string", "null"]
+        videoUrl:
           type: ["string", "null"]
         link:
           type: ["string", "null"]
@@ -1206,12 +1277,18 @@ components:
           type: ["integer", "null"]
         authorName:
           type: ["string", "null"]
+        authorDisplayName:
+          type: ["string", "null"]
         authorAvatar:
+          type: ["string", "null"]
+        authorRole:
           type: ["string", "null"]
         likeCount:
           type: integer
         isLikedByMe:
           type: boolean
+        commentCount:
+          type: integer
         createdAt:
           type: string
 
@@ -1223,8 +1300,10 @@ components:
           type: string
         type:
           type: string
-          enum: [ANNOUNCEMENT, EVENT, SCRIM_RESULT, IMAGE, NEWS]
+          enum: [ANNOUNCEMENT, EVENT, SCRIM_RESULT, IMAGE, VIDEO, NEWS]
         imageUrl:
+          type: ["string", "null"]
+        videoUrl:
           type: ["string", "null"]
         link:
           type: ["string", "null"]
@@ -1238,7 +1317,70 @@ components:
         likeCount:
           type: integer
 
-    # LEADERBOARD
+    FeedComment:
+      type: object
+      required: [id, postId, content, authorId, authorName, authorRole, createdAt]
+      properties:
+        id:
+          type: integer
+        postId:
+          type: integer
+        content:
+          type: string
+        authorId:
+          type: integer
+        authorName:
+          type: string
+        authorDisplayName:
+          type: ["string", "null"]
+        authorAvatar:
+          type: ["string", "null"]
+        authorRole:
+          type: string
+        createdAt:
+          type: string
+
+    FeedCommentInput:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+
+    ClanGcMessage:
+      type: object
+      required: [id, content, type, authorId, authorName, authorRole, createdAt]
+      properties:
+        id:
+          type: integer
+        content:
+          type: string
+        type:
+          type: string
+          enum: [TEXT, IMAGE, VOICE]
+        authorId:
+          type: integer
+        authorName:
+          type: string
+        authorDisplayName:
+          type: ["string", "null"]
+        authorAvatar:
+          type: ["string", "null"]
+        authorRole:
+          type: string
+        createdAt:
+          type: string
+
+    ClanGcMessageInput:
+      type: object
+      required: [content, type]
+      properties:
+        content:
+          type: string
+        type:
+          type: string
+          enum: [TEXT, IMAGE, VOICE]
+
     LeaderboardEntry:
       type: object
       required: [rank, userId, username, clanTag, role, avatarUrl, kills, wins, kdRatio, clanPoints, mvpCount, activity, scrimWins]
@@ -1270,7 +1412,6 @@ components:
         scrimWins:
           type: integer
 
-    # STATS
     DashboardStats:
       type: object
       required: [activeMembers, scrimWins, avgKd, upcomingScrims, recentAnnouncements, upcomingScrimsList]

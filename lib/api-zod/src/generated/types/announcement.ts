@@ -14,7 +14,7 @@ export interface Announcement {
   imageUrl?: string | null;
   /** @nullable */
   link?: string | null;
-  isPinned: boolean;
+  isPinned?: boolean;
   /** @nullable */
   authorId?: number | null;
   /** @nullable */

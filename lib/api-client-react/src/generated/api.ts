@@ -25,10 +25,14 @@ import type {
   AnnouncementInput,
   AnnouncementUpdate,
   AuthResponse,
+  ClanGcMessage,
+  ClanGcMessageInput,
   DashboardStats,
   Event,
   EventInput,
   EventUpdate,
+  FeedComment,
+  FeedCommentInput,
   FeedPost,
   FeedPostInput,
   ForgotPasswordInput,
@@ -149,7 +153,7 @@ export const getRegisterUrl = () => {
 }
 
 /**
- * @summary Register new member (pending approval)
+ * @summary Register new member
  */
 export const register = async (registerInput: RegisterInput, options?: RequestInit): Promise<AuthResponse> => {
 
@@ -166,7 +170,7 @@ export const register = async (registerInput: RegisterInput, options?: RequestIn
 
 
 
-export const getRegisterMutationOptions = <TError = ErrorType<void>,
+export const getRegisterMutationOptions = <TError = ErrorType<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof register>>, TError,{data: BodyType<RegisterInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof register>>, TError,{data: BodyType<RegisterInput>}, TContext> => {
 
@@ -195,12 +199,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type RegisterMutationResult = NonNullable<Awaited<ReturnType<typeof register>>>
     export type RegisterMutationBody = BodyType<RegisterInput>
-    export type RegisterMutationError = ErrorType<void>
+    export type RegisterMutationError = ErrorType<unknown>
 
     /**
- * @summary Register new member (pending approval)
+ * @summary Register new member
  */
-export const useRegister = <TError = ErrorType<void>,
+export const useRegister = <TError = ErrorType<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof register>>, TError,{data: BodyType<RegisterInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof register>>,
@@ -237,7 +241,7 @@ export const login = async (loginInput: LoginInput, options?: RequestInit): Prom
 
 
 
-export const getLoginMutationOptions = <TError = ErrorType<void>,
+export const getLoginMutationOptions = <TError = ErrorType<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof login>>, TError,{data: BodyType<LoginInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof login>>, TError,{data: BodyType<LoginInput>}, TContext> => {
 
@@ -266,12 +270,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type LoginMutationResult = NonNullable<Awaited<ReturnType<typeof login>>>
     export type LoginMutationBody = BodyType<LoginInput>
-    export type LoginMutationError = ErrorType<void>
+    export type LoginMutationError = ErrorType<unknown>
 
     /**
  * @summary Login
  */
-export const useLogin = <TError = ErrorType<void>,
+export const useLogin = <TError = ErrorType<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof login>>, TError,{data: BodyType<LoginInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof login>>,
@@ -681,7 +685,7 @@ export const getGetUserQueryKey = (id: number,) => {
     }
 
 
-export const getGetUserQueryOptions = <TData = Awaited<ReturnType<typeof getUser>>, TError = ErrorType<void>>(id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getUser>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+export const getGetUserQueryOptions = <TData = Awaited<ReturnType<typeof getUser>>, TError = ErrorType<unknown>>(id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getUser>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -700,14 +704,14 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetUserQueryResult = NonNullable<Awaited<ReturnType<typeof getUser>>>
-export type GetUserQueryError = ErrorType<void>
+export type GetUserQueryError = ErrorType<unknown>
 
 
 /**
  * @summary Get user profile
  */
 
-export function useGetUser<TData = Awaited<ReturnType<typeof getUser>>, TError = ErrorType<void>>(
+export function useGetUser<TData = Awaited<ReturnType<typeof getUser>>, TError = ErrorType<unknown>>(
  id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getUser>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
@@ -2263,7 +2267,7 @@ export const getCreateFeedPostUrl = () => {
 }
 
 /**
- * @summary Create feed post (admin)
+ * @summary Create feed post (all approved members)
  */
 export const createFeedPost = async (feedPostInput: FeedPostInput, options?: RequestInit): Promise<FeedPost> => {
 
@@ -2312,7 +2316,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type CreateFeedPostMutationError = ErrorType<unknown>
 
     /**
- * @summary Create feed post (admin)
+ * @summary Create feed post (all approved members)
  */
 export const useCreateFeedPost = <TError = ErrorType<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createFeedPost>>, TError,{data: BodyType<FeedPostInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
@@ -2334,7 +2338,7 @@ export const getDeleteFeedPostUrl = (id: number,) => {
 }
 
 /**
- * @summary Delete feed post (admin)
+ * @summary Delete feed post (own or admin)
  */
 export const deleteFeedPost = async (id: number, options?: RequestInit): Promise<void> => {
 
@@ -2382,7 +2386,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type DeleteFeedPostMutationError = ErrorType<unknown>
 
     /**
- * @summary Delete feed post (admin)
+ * @summary Delete feed post (own or admin)
  */
 export const useDeleteFeedPost = <TError = ErrorType<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteFeedPost>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
@@ -2404,7 +2408,7 @@ export const getLikeFeedPostUrl = (id: number,) => {
 }
 
 /**
- * @summary Like a feed post
+ * @summary Like/unlike a feed post
  */
 export const likeFeedPost = async (id: number, options?: RequestInit): Promise<LikeResponse> => {
 
@@ -2452,7 +2456,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type LikeFeedPostMutationError = ErrorType<unknown>
 
     /**
- * @summary Like a feed post
+ * @summary Like/unlike a feed post
  */
 export const useLikeFeedPost = <TError = ErrorType<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof likeFeedPost>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
@@ -2463,6 +2467,155 @@ export const useLikeFeedPost = <TError = ErrorType<unknown>,
         TContext
       > => {
       return useMutation(getLikeFeedPostMutationOptions(options));
+    }
+
+export const getListFeedCommentsUrl = (id: number,) => {
+
+
+
+
+  return `/api/feed/${id}/comments`
+}
+
+/**
+ * @summary List comments on a feed post
+ */
+export const listFeedComments = async (id: number, options?: RequestInit): Promise<FeedComment[]> => {
+
+  return customFetch<FeedComment[]>(getListFeedCommentsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListFeedCommentsQueryKey = (id: number,) => {
+    return [
+    `/api/feed/${id}/comments`
+    ] as const;
+    }
+
+
+export const getListFeedCommentsQueryOptions = <TData = Awaited<ReturnType<typeof listFeedComments>>, TError = ErrorType<unknown>>(id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listFeedComments>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListFeedCommentsQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listFeedComments>>> = ({ signal }) => listFeedComments(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listFeedComments>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListFeedCommentsQueryResult = NonNullable<Awaited<ReturnType<typeof listFeedComments>>>
+export type ListFeedCommentsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List comments on a feed post
+ */
+
+export function useListFeedComments<TData = Awaited<ReturnType<typeof listFeedComments>>, TError = ErrorType<unknown>>(
+ id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listFeedComments>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListFeedCommentsQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getCreateFeedCommentUrl = (id: number,) => {
+
+
+
+
+  return `/api/feed/${id}/comments`
+}
+
+/**
+ * @summary Comment on a feed post
+ */
+export const createFeedComment = async (id: number,
+    feedCommentInput: FeedCommentInput, options?: RequestInit): Promise<FeedComment> => {
+
+  return customFetch<FeedComment>(getCreateFeedCommentUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      feedCommentInput,)
+  }
+);}
+
+
+
+
+export const getCreateFeedCommentMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createFeedComment>>, TError,{id: number;data: BodyType<FeedCommentInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createFeedComment>>, TError,{id: number;data: BodyType<FeedCommentInput>}, TContext> => {
+
+const mutationKey = ['createFeedComment'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createFeedComment>>, {id: number;data: BodyType<FeedCommentInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  createFeedComment(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateFeedCommentMutationResult = NonNullable<Awaited<ReturnType<typeof createFeedComment>>>
+    export type CreateFeedCommentMutationBody = BodyType<FeedCommentInput>
+    export type CreateFeedCommentMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Comment on a feed post
+ */
+export const useCreateFeedComment = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createFeedComment>>, TError,{id: number;data: BodyType<FeedCommentInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createFeedComment>>,
+        TError,
+        {id: number;data: BodyType<FeedCommentInput>},
+        TContext
+      > => {
+      return useMutation(getCreateFeedCommentMutationOptions(options));
     }
 
 export const getGetLeaderboardUrl = (params?: GetLeaderboardParams,) => {
@@ -2625,6 +2778,154 @@ export function useGetDashboardStats<TData = Awaited<ReturnType<typeof getDashbo
 
 
 
+
+export const getListClanGcMessagesUrl = () => {
+
+
+
+
+  return `/api/clan-gc`
+}
+
+/**
+ * @summary List Clan GC messages (latest 100)
+ */
+export const listClanGcMessages = async ( options?: RequestInit): Promise<ClanGcMessage[]> => {
+
+  return customFetch<ClanGcMessage[]>(getListClanGcMessagesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListClanGcMessagesQueryKey = () => {
+    return [
+    `/api/clan-gc`
+    ] as const;
+    }
+
+
+export const getListClanGcMessagesQueryOptions = <TData = Awaited<ReturnType<typeof listClanGcMessages>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listClanGcMessages>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListClanGcMessagesQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listClanGcMessages>>> = ({ signal }) => listClanGcMessages({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listClanGcMessages>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListClanGcMessagesQueryResult = NonNullable<Awaited<ReturnType<typeof listClanGcMessages>>>
+export type ListClanGcMessagesQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List Clan GC messages (latest 100)
+ */
+
+export function useListClanGcMessages<TData = Awaited<ReturnType<typeof listClanGcMessages>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listClanGcMessages>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListClanGcMessagesQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getCreateClanGcMessageUrl = () => {
+
+
+
+
+  return `/api/clan-gc`
+}
+
+/**
+ * @summary Send a Clan GC message
+ */
+export const createClanGcMessage = async (clanGcMessageInput: ClanGcMessageInput, options?: RequestInit): Promise<ClanGcMessage> => {
+
+  return customFetch<ClanGcMessage>(getCreateClanGcMessageUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      clanGcMessageInput,)
+  }
+);}
+
+
+
+
+export const getCreateClanGcMessageMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createClanGcMessage>>, TError,{data: BodyType<ClanGcMessageInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createClanGcMessage>>, TError,{data: BodyType<ClanGcMessageInput>}, TContext> => {
+
+const mutationKey = ['createClanGcMessage'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createClanGcMessage>>, {data: BodyType<ClanGcMessageInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createClanGcMessage(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateClanGcMessageMutationResult = NonNullable<Awaited<ReturnType<typeof createClanGcMessage>>>
+    export type CreateClanGcMessageMutationBody = BodyType<ClanGcMessageInput>
+    export type CreateClanGcMessageMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Send a Clan GC message
+ */
+export const useCreateClanGcMessage = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createClanGcMessage>>, TError,{data: BodyType<ClanGcMessageInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createClanGcMessage>>,
+        TError,
+        {data: BodyType<ClanGcMessageInput>},
+        TContext
+      > => {
+      return useMutation(getCreateClanGcMessageMutationOptions(options));
+    }
 
 export const getAdminListMembersUrl = () => {
 

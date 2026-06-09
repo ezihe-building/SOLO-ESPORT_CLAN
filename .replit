@@ -11,6 +11,26 @@ env = { "CI" = "true" }
 [workflows]
 runButton = "Project"
 
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "artifacts/solos-esportz: SOLOS+ ESPORTZ"
+
+[[workflows.workflow]]
+name = "artifacts/solos-esportz: SOLOS+ ESPORTZ"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "PORT=25896 BASE_PATH=/ pnpm --filter @workspace/solos-esportz run dev"
+
 [agent]
 stack = "PNPM_WORKSPACE"
 expertMode = true

@@ -11,7 +11,8 @@ export type RoleInputRole = typeof RoleInputRole[keyof typeof RoleInputRole];
 
 export const RoleInputRole = {
   CLAN_MASTER: 'CLAN_MASTER',
-  ADMIN: 'ADMIN',
+  CO_LEADER: 'CO_LEADER',
+  MANAGEMENT: 'MANAGEMENT',
   TIER1: 'TIER1',
   TIER2: 'TIER2',
   TIER3: 'TIER3',

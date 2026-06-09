@@ -17,7 +17,7 @@ export const HealthCheckResponse = zod.object({
 
 
 /**
- * @summary Register new member (pending approval)
+ * @summary Register new member
  */
 export const registerBodyUsernameMin = 2;
 
@@ -48,13 +48,14 @@ export const LoginResponse = zod.object({
   "user": zod.object({
   "id": zod.number(),
   "username": zod.string(),
+  "displayName": zod.string().nullish(),
   "clanTag": zod.string(),
-  "email": zod.string(),
-  "whatsapp": zod.string(),
+  "email": zod.string().nullish(),
+  "whatsapp": zod.string().nullish(),
   "tiktok": zod.string().nullish(),
   "instagram": zod.string().nullish(),
   "discord": zod.string().nullish(),
-  "role": zod.enum(['CLAN_MASTER', 'ADMIN', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER']),
+  "role": zod.enum(['CLAN_MASTER', 'CO_LEADER', 'MANAGEMENT', 'ADMIN', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER']),
   "status": zod.enum(['PENDING', 'ACTIVE', 'SUSPENDED', 'REJECTED']),
   "bio": zod.string().nullish(),
   "avatarUrl": zod.string().nullish(),
@@ -68,7 +69,7 @@ export const LoginResponse = zod.object({
   "activity": zod.number().optional(),
   "tournamentWins": zod.number().optional(),
   "scrimWins": zod.number().optional(),
-  "joinedAt": zod.string()
+  "joinedAt": zod.string().optional()
 })
 })
 
@@ -87,13 +88,14 @@ export const LogoutResponse = zod.object({
 export const GetMeResponse = zod.object({
   "id": zod.number(),
   "username": zod.string(),
+  "displayName": zod.string().nullish(),
   "clanTag": zod.string(),
-  "email": zod.string(),
-  "whatsapp": zod.string(),
+  "email": zod.string().nullish(),
+  "whatsapp": zod.string().nullish(),
   "tiktok": zod.string().nullish(),
   "instagram": zod.string().nullish(),
   "discord": zod.string().nullish(),
-  "role": zod.enum(['CLAN_MASTER', 'ADMIN', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER']),
+  "role": zod.enum(['CLAN_MASTER', 'CO_LEADER', 'MANAGEMENT', 'ADMIN', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER']),
   "status": zod.enum(['PENDING', 'ACTIVE', 'SUSPENDED', 'REJECTED']),
   "bio": zod.string().nullish(),
   "avatarUrl": zod.string().nullish(),
@@ -107,7 +109,7 @@ export const GetMeResponse = zod.object({
   "activity": zod.number().optional(),
   "tournamentWins": zod.number().optional(),
   "scrimWins": zod.number().optional(),
-  "joinedAt": zod.string()
+  "joinedAt": zod.string().optional()
 })
 
 
@@ -126,13 +128,9 @@ export const ForgotPasswordResponse = zod.object({
 /**
  * @summary Reset password with token
  */
-export const resetPasswordBodyPasswordMin = 8;
-
-
-
 export const ResetPasswordBody = zod.object({
   "token": zod.string(),
-  "password": zod.string().min(resetPasswordBodyPasswordMin)
+  "password": zod.string()
 })
 
 export const ResetPasswordResponse = zod.object({
@@ -146,13 +144,14 @@ export const ResetPasswordResponse = zod.object({
 export const ListUsersResponseItem = zod.object({
   "id": zod.number(),
   "username": zod.string(),
+  "displayName": zod.string().nullish(),
   "clanTag": zod.string(),
-  "email": zod.string(),
-  "whatsapp": zod.string(),
+  "email": zod.string().nullish(),
+  "whatsapp": zod.string().nullish(),
   "tiktok": zod.string().nullish(),
   "instagram": zod.string().nullish(),
   "discord": zod.string().nullish(),
-  "role": zod.enum(['CLAN_MASTER', 'ADMIN', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER']),
+  "role": zod.enum(['CLAN_MASTER', 'CO_LEADER', 'MANAGEMENT', 'ADMIN', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER']),
   "status": zod.enum(['PENDING', 'ACTIVE', 'SUSPENDED', 'REJECTED']),
   "bio": zod.string().nullish(),
   "avatarUrl": zod.string().nullish(),
@@ -166,7 +165,7 @@ export const ListUsersResponseItem = zod.object({
   "activity": zod.number().optional(),
   "tournamentWins": zod.number().optional(),
   "scrimWins": zod.number().optional(),
-  "joinedAt": zod.string()
+  "joinedAt": zod.string().optional()
 })
 export const ListUsersResponse = zod.array(ListUsersResponseItem)
 
@@ -181,13 +180,14 @@ export const GetUserParams = zod.object({
 export const GetUserResponse = zod.object({
   "id": zod.number(),
   "username": zod.string(),
+  "displayName": zod.string().nullish(),
   "clanTag": zod.string(),
-  "email": zod.string(),
-  "whatsapp": zod.string(),
+  "email": zod.string().nullish(),
+  "whatsapp": zod.string().nullish(),
   "tiktok": zod.string().nullish(),
   "instagram": zod.string().nullish(),
   "discord": zod.string().nullish(),
-  "role": zod.enum(['CLAN_MASTER', 'ADMIN', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER']),
+  "role": zod.enum(['CLAN_MASTER', 'CO_LEADER', 'MANAGEMENT', 'ADMIN', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER']),
   "status": zod.enum(['PENDING', 'ACTIVE', 'SUSPENDED', 'REJECTED']),
   "bio": zod.string().nullish(),
   "avatarUrl": zod.string().nullish(),
@@ -201,7 +201,7 @@ export const GetUserResponse = zod.object({
   "activity": zod.number().optional(),
   "tournamentWins": zod.number().optional(),
   "scrimWins": zod.number().optional(),
-  "joinedAt": zod.string()
+  "joinedAt": zod.string().optional()
 })
 
 
@@ -213,6 +213,7 @@ export const UpdateUserParams = zod.object({
 })
 
 export const UpdateUserBody = zod.object({
+  "displayName": zod.string().nullish(),
   "bio": zod.string().nullish(),
   "avatarUrl": zod.string().nullish(),
   "whatsapp": zod.string().nullish(),
@@ -224,13 +225,14 @@ export const UpdateUserBody = zod.object({
 export const UpdateUserResponse = zod.object({
   "id": zod.number(),
   "username": zod.string(),
+  "displayName": zod.string().nullish(),
   "clanTag": zod.string(),
-  "email": zod.string(),
-  "whatsapp": zod.string(),
+  "email": zod.string().nullish(),
+  "whatsapp": zod.string().nullish(),
   "tiktok": zod.string().nullish(),
   "instagram": zod.string().nullish(),
   "discord": zod.string().nullish(),
-  "role": zod.enum(['CLAN_MASTER', 'ADMIN', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER']),
+  "role": zod.enum(['CLAN_MASTER', 'CO_LEADER', 'MANAGEMENT', 'ADMIN', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER']),
   "status": zod.enum(['PENDING', 'ACTIVE', 'SUSPENDED', 'REJECTED']),
   "bio": zod.string().nullish(),
   "avatarUrl": zod.string().nullish(),
@@ -244,7 +246,7 @@ export const UpdateUserResponse = zod.object({
   "activity": zod.number().optional(),
   "tournamentWins": zod.number().optional(),
   "scrimWins": zod.number().optional(),
-  "joinedAt": zod.string()
+  "joinedAt": zod.string().optional()
 })
 
 
@@ -270,13 +272,14 @@ export const UpdateUserStatsBody = zod.object({
 export const UpdateUserStatsResponse = zod.object({
   "id": zod.number(),
   "username": zod.string(),
+  "displayName": zod.string().nullish(),
   "clanTag": zod.string(),
-  "email": zod.string(),
-  "whatsapp": zod.string(),
+  "email": zod.string().nullish(),
+  "whatsapp": zod.string().nullish(),
   "tiktok": zod.string().nullish(),
   "instagram": zod.string().nullish(),
   "discord": zod.string().nullish(),
-  "role": zod.enum(['CLAN_MASTER', 'ADMIN', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER']),
+  "role": zod.enum(['CLAN_MASTER', 'CO_LEADER', 'MANAGEMENT', 'ADMIN', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER']),
   "status": zod.enum(['PENDING', 'ACTIVE', 'SUSPENDED', 'REJECTED']),
   "bio": zod.string().nullish(),
   "avatarUrl": zod.string().nullish(),
@@ -290,7 +293,7 @@ export const UpdateUserStatsResponse = zod.object({
   "activity": zod.number().optional(),
   "tournamentWins": zod.number().optional(),
   "scrimWins": zod.number().optional(),
-  "joinedAt": zod.string()
+  "joinedAt": zod.string().optional()
 })
 
 
@@ -303,7 +306,7 @@ export const ListAnnouncementsResponseItem = zod.object({
   "content": zod.string(),
   "imageUrl": zod.string().nullish(),
   "link": zod.string().nullish(),
-  "isPinned": zod.boolean(),
+  "isPinned": zod.boolean().optional(),
   "authorId": zod.number().nullish(),
   "authorName": zod.string().nullish(),
   "createdAt": zod.string(),
@@ -345,7 +348,7 @@ export const UpdateAnnouncementResponse = zod.object({
   "content": zod.string(),
   "imageUrl": zod.string().nullish(),
   "link": zod.string().nullish(),
-  "isPinned": zod.boolean(),
+  "isPinned": zod.boolean().optional(),
   "authorId": zod.number().nullish(),
   "authorName": zod.string().nullish(),
   "createdAt": zod.string(),
@@ -378,7 +381,7 @@ export const PinAnnouncementResponse = zod.object({
   "content": zod.string(),
   "imageUrl": zod.string().nullish(),
   "link": zod.string().nullish(),
-  "isPinned": zod.boolean(),
+  "isPinned": zod.boolean().optional(),
   "authorId": zod.number().nullish(),
   "authorName": zod.string().nullish(),
   "createdAt": zod.string(),
@@ -633,32 +636,37 @@ export const PostScrimResultResponse = zod.object({
 export const ListFeedPostsResponseItem = zod.object({
   "id": zod.number(),
   "content": zod.string(),
-  "type": zod.enum(['ANNOUNCEMENT', 'EVENT', 'SCRIM_RESULT', 'IMAGE', 'NEWS']),
+  "type": zod.enum(['ANNOUNCEMENT', 'EVENT', 'SCRIM_RESULT', 'IMAGE', 'VIDEO', 'NEWS']),
   "imageUrl": zod.string().nullish(),
+  "videoUrl": zod.string().nullish(),
   "link": zod.string().nullish(),
   "authorId": zod.number().nullish(),
   "authorName": zod.string().nullish(),
+  "authorDisplayName": zod.string().nullish(),
   "authorAvatar": zod.string().nullish(),
+  "authorRole": zod.string().nullish(),
   "likeCount": zod.number(),
   "isLikedByMe": zod.boolean(),
+  "commentCount": zod.number(),
   "createdAt": zod.string()
 })
 export const ListFeedPostsResponse = zod.array(ListFeedPostsResponseItem)
 
 
 /**
- * @summary Create feed post (admin)
+ * @summary Create feed post (all approved members)
  */
 export const CreateFeedPostBody = zod.object({
   "content": zod.string(),
-  "type": zod.enum(['ANNOUNCEMENT', 'EVENT', 'SCRIM_RESULT', 'IMAGE', 'NEWS']),
+  "type": zod.enum(['ANNOUNCEMENT', 'EVENT', 'SCRIM_RESULT', 'IMAGE', 'VIDEO', 'NEWS']),
   "imageUrl": zod.string().nullish(),
+  "videoUrl": zod.string().nullish(),
   "link": zod.string().nullish()
 })
 
 
 /**
- * @summary Delete feed post (admin)
+ * @summary Delete feed post (own or admin)
  */
 export const DeleteFeedPostParams = zod.object({
   "id": zod.coerce.number()
@@ -666,7 +674,7 @@ export const DeleteFeedPostParams = zod.object({
 
 
 /**
- * @summary Like a feed post
+ * @summary Like/unlike a feed post
  */
 export const LikeFeedPostParams = zod.object({
   "id": zod.coerce.number()
@@ -675,6 +683,39 @@ export const LikeFeedPostParams = zod.object({
 export const LikeFeedPostResponse = zod.object({
   "liked": zod.boolean(),
   "likeCount": zod.number()
+})
+
+
+/**
+ * @summary List comments on a feed post
+ */
+export const ListFeedCommentsParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ListFeedCommentsResponseItem = zod.object({
+  "id": zod.number(),
+  "postId": zod.number(),
+  "content": zod.string(),
+  "authorId": zod.number(),
+  "authorName": zod.string(),
+  "authorDisplayName": zod.string().nullish(),
+  "authorAvatar": zod.string().nullish(),
+  "authorRole": zod.string(),
+  "createdAt": zod.string()
+})
+export const ListFeedCommentsResponse = zod.array(ListFeedCommentsResponseItem)
+
+
+/**
+ * @summary Comment on a feed post
+ */
+export const CreateFeedCommentParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const CreateFeedCommentBody = zod.object({
+  "content": zod.string()
 })
 
 
@@ -719,7 +760,7 @@ export const GetDashboardStatsResponse = zod.object({
   "content": zod.string(),
   "imageUrl": zod.string().nullish(),
   "link": zod.string().nullish(),
-  "isPinned": zod.boolean(),
+  "isPinned": zod.boolean().optional(),
   "authorId": zod.number().nullish(),
   "authorName": zod.string().nullish(),
   "createdAt": zod.string(),
@@ -746,18 +787,45 @@ export const GetDashboardStatsResponse = zod.object({
 
 
 /**
+ * @summary List Clan GC messages (latest 100)
+ */
+export const ListClanGcMessagesResponseItem = zod.object({
+  "id": zod.number(),
+  "content": zod.string(),
+  "type": zod.enum(['TEXT', 'IMAGE', 'VOICE']),
+  "authorId": zod.number(),
+  "authorName": zod.string(),
+  "authorDisplayName": zod.string().nullish(),
+  "authorAvatar": zod.string().nullish(),
+  "authorRole": zod.string(),
+  "createdAt": zod.string()
+})
+export const ListClanGcMessagesResponse = zod.array(ListClanGcMessagesResponseItem)
+
+
+/**
+ * @summary Send a Clan GC message
+ */
+export const CreateClanGcMessageBody = zod.object({
+  "content": zod.string(),
+  "type": zod.enum(['TEXT', 'IMAGE', 'VOICE'])
+})
+
+
+/**
  * @summary Admin - list all members including pending
  */
 export const AdminListMembersResponseItem = zod.object({
   "id": zod.number(),
   "username": zod.string(),
+  "displayName": zod.string().nullish(),
   "clanTag": zod.string(),
-  "email": zod.string(),
-  "whatsapp": zod.string(),
+  "email": zod.string().nullish(),
+  "whatsapp": zod.string().nullish(),
   "tiktok": zod.string().nullish(),
   "instagram": zod.string().nullish(),
   "discord": zod.string().nullish(),
-  "role": zod.enum(['CLAN_MASTER', 'ADMIN', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER']),
+  "role": zod.enum(['CLAN_MASTER', 'CO_LEADER', 'MANAGEMENT', 'ADMIN', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER']),
   "status": zod.enum(['PENDING', 'ACTIVE', 'SUSPENDED', 'REJECTED']),
   "bio": zod.string().nullish(),
   "avatarUrl": zod.string().nullish(),
@@ -771,7 +839,7 @@ export const AdminListMembersResponseItem = zod.object({
   "activity": zod.number().optional(),
   "tournamentWins": zod.number().optional(),
   "scrimWins": zod.number().optional(),
-  "joinedAt": zod.string()
+  "joinedAt": zod.string().optional()
 })
 export const AdminListMembersResponse = zod.array(AdminListMembersResponseItem)
 
@@ -786,13 +854,14 @@ export const ApproveMemberParams = zod.object({
 export const ApproveMemberResponse = zod.object({
   "id": zod.number(),
   "username": zod.string(),
+  "displayName": zod.string().nullish(),
   "clanTag": zod.string(),
-  "email": zod.string(),
-  "whatsapp": zod.string(),
+  "email": zod.string().nullish(),
+  "whatsapp": zod.string().nullish(),
   "tiktok": zod.string().nullish(),
   "instagram": zod.string().nullish(),
   "discord": zod.string().nullish(),
-  "role": zod.enum(['CLAN_MASTER', 'ADMIN', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER']),
+  "role": zod.enum(['CLAN_MASTER', 'CO_LEADER', 'MANAGEMENT', 'ADMIN', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER']),
   "status": zod.enum(['PENDING', 'ACTIVE', 'SUSPENDED', 'REJECTED']),
   "bio": zod.string().nullish(),
   "avatarUrl": zod.string().nullish(),
@@ -806,7 +875,7 @@ export const ApproveMemberResponse = zod.object({
   "activity": zod.number().optional(),
   "tournamentWins": zod.number().optional(),
   "scrimWins": zod.number().optional(),
-  "joinedAt": zod.string()
+  "joinedAt": zod.string().optional()
 })
 
 
@@ -820,13 +889,14 @@ export const RejectMemberParams = zod.object({
 export const RejectMemberResponse = zod.object({
   "id": zod.number(),
   "username": zod.string(),
+  "displayName": zod.string().nullish(),
   "clanTag": zod.string(),
-  "email": zod.string(),
-  "whatsapp": zod.string(),
+  "email": zod.string().nullish(),
+  "whatsapp": zod.string().nullish(),
   "tiktok": zod.string().nullish(),
   "instagram": zod.string().nullish(),
   "discord": zod.string().nullish(),
-  "role": zod.enum(['CLAN_MASTER', 'ADMIN', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER']),
+  "role": zod.enum(['CLAN_MASTER', 'CO_LEADER', 'MANAGEMENT', 'ADMIN', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER']),
   "status": zod.enum(['PENDING', 'ACTIVE', 'SUSPENDED', 'REJECTED']),
   "bio": zod.string().nullish(),
   "avatarUrl": zod.string().nullish(),
@@ -840,7 +910,7 @@ export const RejectMemberResponse = zod.object({
   "activity": zod.number().optional(),
   "tournamentWins": zod.number().optional(),
   "scrimWins": zod.number().optional(),
-  "joinedAt": zod.string()
+  "joinedAt": zod.string().optional()
 })
 
 
@@ -854,13 +924,14 @@ export const SuspendMemberParams = zod.object({
 export const SuspendMemberResponse = zod.object({
   "id": zod.number(),
   "username": zod.string(),
+  "displayName": zod.string().nullish(),
   "clanTag": zod.string(),
-  "email": zod.string(),
-  "whatsapp": zod.string(),
+  "email": zod.string().nullish(),
+  "whatsapp": zod.string().nullish(),
   "tiktok": zod.string().nullish(),
   "instagram": zod.string().nullish(),
   "discord": zod.string().nullish(),
-  "role": zod.enum(['CLAN_MASTER', 'ADMIN', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER']),
+  "role": zod.enum(['CLAN_MASTER', 'CO_LEADER', 'MANAGEMENT', 'ADMIN', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER']),
   "status": zod.enum(['PENDING', 'ACTIVE', 'SUSPENDED', 'REJECTED']),
   "bio": zod.string().nullish(),
   "avatarUrl": zod.string().nullish(),
@@ -874,7 +945,7 @@ export const SuspendMemberResponse = zod.object({
   "activity": zod.number().optional(),
   "tournamentWins": zod.number().optional(),
   "scrimWins": zod.number().optional(),
-  "joinedAt": zod.string()
+  "joinedAt": zod.string().optional()
 })
 
 
@@ -888,13 +959,14 @@ export const RestoreMemberParams = zod.object({
 export const RestoreMemberResponse = zod.object({
   "id": zod.number(),
   "username": zod.string(),
+  "displayName": zod.string().nullish(),
   "clanTag": zod.string(),
-  "email": zod.string(),
-  "whatsapp": zod.string(),
+  "email": zod.string().nullish(),
+  "whatsapp": zod.string().nullish(),
   "tiktok": zod.string().nullish(),
   "instagram": zod.string().nullish(),
   "discord": zod.string().nullish(),
-  "role": zod.enum(['CLAN_MASTER', 'ADMIN', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER']),
+  "role": zod.enum(['CLAN_MASTER', 'CO_LEADER', 'MANAGEMENT', 'ADMIN', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER']),
   "status": zod.enum(['PENDING', 'ACTIVE', 'SUSPENDED', 'REJECTED']),
   "bio": zod.string().nullish(),
   "avatarUrl": zod.string().nullish(),
@@ -908,7 +980,7 @@ export const RestoreMemberResponse = zod.object({
   "activity": zod.number().optional(),
   "tournamentWins": zod.number().optional(),
   "scrimWins": zod.number().optional(),
-  "joinedAt": zod.string()
+  "joinedAt": zod.string().optional()
 })
 
 
@@ -928,19 +1000,20 @@ export const UpdateMemberRoleParams = zod.object({
 })
 
 export const UpdateMemberRoleBody = zod.object({
-  "role": zod.enum(['CLAN_MASTER', 'ADMIN', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER'])
+  "role": zod.enum(['CLAN_MASTER', 'CO_LEADER', 'MANAGEMENT', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER'])
 })
 
 export const UpdateMemberRoleResponse = zod.object({
   "id": zod.number(),
   "username": zod.string(),
+  "displayName": zod.string().nullish(),
   "clanTag": zod.string(),
-  "email": zod.string(),
-  "whatsapp": zod.string(),
+  "email": zod.string().nullish(),
+  "whatsapp": zod.string().nullish(),
   "tiktok": zod.string().nullish(),
   "instagram": zod.string().nullish(),
   "discord": zod.string().nullish(),
-  "role": zod.enum(['CLAN_MASTER', 'ADMIN', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER']),
+  "role": zod.enum(['CLAN_MASTER', 'CO_LEADER', 'MANAGEMENT', 'ADMIN', 'TIER1', 'TIER2', 'TIER3', 'NEW_MEMBER']),
   "status": zod.enum(['PENDING', 'ACTIVE', 'SUSPENDED', 'REJECTED']),
   "bio": zod.string().nullish(),
   "avatarUrl": zod.string().nullish(),
@@ -954,7 +1027,7 @@ export const UpdateMemberRoleResponse = zod.object({
   "activity": zod.number().optional(),
   "tournamentWins": zod.number().optional(),
   "scrimWins": zod.number().optional(),
-  "joinedAt": zod.string()
+  "joinedAt": zod.string().optional()
 })
 
 

@@ -26,6 +26,7 @@ export function formatUser(user: any) {
   return {
     id: user.id,
     username: user.username,
+    displayName: user.displayName ?? null,
     clanTag: buildClanTag(user.username),
     email: user.email ?? null,
     whatsapp: user.whatsapp ?? null,

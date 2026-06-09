@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "wouter";
-import { Home, Trophy, Swords, Users, User, Lock, LogOut, RefreshCw } from "lucide-react";
+import { Home, Trophy, Swords, Users, User, Lock, LogOut, RefreshCw, MessageCircle } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import logoUrl from "@assets/solos-logo-clean.png";
@@ -19,6 +19,7 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
     { icon: Trophy, label: "Ranks", href: "/ranks" },
     { icon: Swords, label: "Scrims", href: "/scrims" },
     { icon: Users, label: "Feed", href: "/feed" },
+    { icon: MessageCircle, label: "Clan GC", href: "/clan-gc" },
     { icon: User, label: "Profile", href: "/profile" },
   ];
 
@@ -79,14 +80,14 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
       <main className="flex-1 overflow-y-auto">
         {children}
       </main>
-      <nav className="fixed bottom-0 left-0 right-0 max-w-[428px] mx-auto h-16 bg-[#0a0a0a] border-t border-white/8 flex items-center justify-around px-2 z-50">
+      <nav className="fixed bottom-0 left-0 right-0 max-w-[428px] mx-auto h-16 bg-[#0a0a0a] border-t border-white/8 flex items-center justify-around px-1 z-50">
         {navItems.map((item) => {
           const isActive = location === item.href || location.startsWith(`${item.href}/`);
           return (
             <Link key={item.href} href={item.href}
-              className={`flex flex-col items-center justify-center w-16 h-full space-y-1 transition-colors ${isActive ? "text-primary" : "text-muted-foreground hover:text-white"}`}>
+              className={`flex flex-col items-center justify-center w-14 h-full space-y-0.5 transition-colors ${isActive ? "text-primary" : "text-muted-foreground hover:text-white"}`}>
               <item.icon className="w-5 h-5" />
-              <span className="text-[10px] uppercase font-bold tracking-wider">{item.label}</span>
+              <span className="text-[9px] uppercase font-bold tracking-wider leading-none">{item.label}</span>
             </Link>
           );
         })}

@@ -11,9 +11,13 @@ import type { UserStatus } from './userStatus';
 export interface User {
   id: number;
   username: string;
+  /** @nullable */
+  displayName?: string | null;
   clanTag: string;
-  email: string;
-  whatsapp: string;
+  /** @nullable */
+  email?: string | null;
+  /** @nullable */
+  whatsapp?: string | null;
   /** @nullable */
   tiktok?: string | null;
   /** @nullable */
@@ -36,5 +40,5 @@ export interface User {
   activity?: number;
   tournamentWins?: number;
   scrimWins?: number;
-  joinedAt: string;
+  joinedAt?: string;
 }

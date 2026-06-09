@@ -14,5 +14,6 @@ export const FeedPostType = {
   EVENT: 'EVENT',
   SCRIM_RESULT: 'SCRIM_RESULT',
   IMAGE: 'IMAGE',
+  VIDEO: 'VIDEO',
   NEWS: 'NEWS',
 } as const;
