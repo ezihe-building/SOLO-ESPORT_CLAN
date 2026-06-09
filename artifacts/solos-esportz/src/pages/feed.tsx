@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
-import { Heart, Trash2, Plus, X, Image as ImageIcon, Video, Send, MessageCircle, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
+import { Heart, Trash2, Plus, X, Image as ImageIcon, Video, Send, MessageCircle, ChevronDown, ChevronUp, Loader2, Play, Volume2, AlertCircle } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 const ROLE_BADGES: Record<string, { label: string; emoji?: string; className: string }> = {
@@ -312,7 +312,24 @@ export default function FeedPage() {
                   <img src={post.imageUrl} alt="Post media" className="w-full max-h-64 object-cover" />
                 )}
                 {post.videoUrl && (
-                  <video src={post.videoUrl} className="w-full max-h-64 object-cover bg-black" controls preload="metadata" />
+                  <div className="w-full bg-black rounded-t-xl overflow-hidden">
+                    <video
+                      src={post.videoUrl}
+                      className="w-full max-h-64 object-cover"
+                      controls
+                      preload="metadata"
+                      playsInline
+                      muted={false}
+                      onError={() => console.error("Video failed to load:", post.videoUrl)}
+                    >
+                      <source src={post.videoUrl} type="video/mp4" />
+                      <source src={post.videoUrl} type="video/webm" />
+                      <div className="flex items-center justify-center gap-2 text-white/60 py-8 text-sm">
+                        <AlertCircle className="w-4 h-4" />
+                        Video unavailable. Try refreshing.
+                      </div>
+                    </video>
+                  </div>
                 )}
                 <div className="p-4 space-y-3">
                   <div className="flex items-center justify-between">
