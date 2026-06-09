@@ -1,12 +1,40 @@
 -- SOLOS+ ESPORTZ — Neon PostgreSQL migration
 -- Run this in your Neon SQL editor to update the production database
--- Safe to run multiple times (IF NOT EXISTS / IF NOT EXISTS)
+-- Safe to run multiple times (IF NOT EXISTS / ADD COLUMN IF NOT EXISTS)
 
--- 1. Update existing tables — add new columns if missing
+-- ============================================================
+-- 1. Ensure all users columns exist (safe, idempotent)
+-- ============================================================
 ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "display_name" text;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "email" text;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "whatsapp" text;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "tiktok" text;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "instagram" text;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "discord" text;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "bio" text;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "avatar_url" text;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "kills" integer NOT NULL DEFAULT 0;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "deaths" integer NOT NULL DEFAULT 0;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "wins" integer NOT NULL DEFAULT 0;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "losses" integer NOT NULL DEFAULT 0;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "kd_ratio" real NOT NULL DEFAULT 0;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "clan_points" integer NOT NULL DEFAULT 0;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "mvp_count" integer NOT NULL DEFAULT 0;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "activity" integer NOT NULL DEFAULT 0;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "tournament_wins" integer NOT NULL DEFAULT 0;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "scrim_wins" integer NOT NULL DEFAULT 0;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "reset_token" text;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "reset_token_expiry" timestamptz;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "updated_at" timestamptz NOT NULL DEFAULT now();
+
+-- ============================================================
+-- 2. Ensure feed_posts column exists
+-- ============================================================
 ALTER TABLE "feed_posts" ADD COLUMN IF NOT EXISTS "video_url" text;
 
--- 2. Create new tables if missing
+-- ============================================================
+-- 3. Create new tables if missing
+-- ============================================================
 CREATE TABLE IF NOT EXISTS "feed_comments" (
   "id" serial PRIMARY KEY,
   "post_id" integer NOT NULL,
@@ -23,7 +51,9 @@ CREATE TABLE IF NOT EXISTS "clan_gc_messages" (
   "created_at" timestamptz NOT NULL DEFAULT now()
 );
 
--- 3. Original tables (IF NOT EXISTS — safe for first-run too)
+-- ============================================================
+-- 4. Create base tables if missing (first-run safe)
+-- ============================================================
 CREATE TABLE IF NOT EXISTS "users" (
   "id" serial PRIMARY KEY,
   "username" text NOT NULL,
