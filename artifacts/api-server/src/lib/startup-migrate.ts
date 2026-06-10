@@ -101,6 +101,26 @@ export async function runStartupMigrations(): Promise<void> {
         "author_id" integer NOT NULL,
         "content" text NOT NULL,
         "type" text NOT NULL DEFAULT 'TEXT',
+        "channel" text NOT NULL DEFAULT 'GENERAL',
+        "reply_to_id" integer,
+        "edited_at" timestamptz,
+        "is_pinned" boolean NOT NULL DEFAULT false,
+        "created_at" timestamptz NOT NULL DEFAULT now()
+      );
+
+      CREATE TABLE IF NOT EXISTS "clan_gc_reactions" (
+        "id" serial PRIMARY KEY,
+        "message_id" integer NOT NULL,
+        "user_id" integer NOT NULL,
+        "emoji" text NOT NULL,
+        "created_at" timestamptz NOT NULL DEFAULT now()
+      );
+
+      CREATE TABLE IF NOT EXISTS "clan_gc_channels" (
+        "id" serial PRIMARY KEY,
+        "name" text NOT NULL,
+        "slug" text NOT NULL UNIQUE,
+        "allowed_roles" text NOT NULL DEFAULT 'ALL',
         "created_at" timestamptz NOT NULL DEFAULT now()
       );
 
@@ -154,6 +174,27 @@ export async function runStartupMigrations(): Promise<void> {
         "joined_at" timestamptz NOT NULL DEFAULT now()
       );
     `);
+
+    // 6. Add missing columns to existing clan_gc_messages table
+    await client.query(`
+      ALTER TABLE "clan_gc_messages" ADD COLUMN IF NOT EXISTS "channel" text NOT NULL DEFAULT 'GENERAL';
+      ALTER TABLE "clan_gc_messages" ADD COLUMN IF NOT EXISTS "reply_to_id" integer;
+      ALTER TABLE "clan_gc_messages" ADD COLUMN IF NOT EXISTS "edited_at" timestamptz;
+      ALTER TABLE "clan_gc_messages" ADD COLUMN IF NOT EXISTS "is_pinned" boolean NOT NULL DEFAULT false;
+    `);
+    logger.info("Clan GC messages columns updated.");
+
+    // 7. Seed default channels if none exist
+    await client.query(`
+      INSERT INTO "clan_gc_channels" ("name", "slug", "allowed_roles") VALUES
+      ('General', 'GENERAL', 'ALL'),
+      ('Tier 1', 'TIER1', 'TIER1,MANAGEMENT,CLAN_MASTER'),
+      ('Tier 2', 'TIER2', 'TIER2,MANAGEMENT,CLAN_MASTER'),
+      ('Tier 3', 'TIER3', 'TIER3,MANAGEMENT,CLAN_MASTER'),
+      ('Management', 'MANAGEMENT', 'MANAGEMENT,CLAN_MASTER')
+      ON CONFLICT ("slug") DO NOTHING;
+    `);
+    logger.info("Default channels seeded.");
 
     logger.info("Startup schema migrations complete.");
   } catch (err) {
